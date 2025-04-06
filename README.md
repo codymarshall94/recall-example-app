@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🗣️ Google Meet Transcript App
 
-## Getting Started
+This is a simple [Next.js](https://nextjs.org) app that uses [Recall.ai](https://recall.ai) to transcribe a **Google Meet meeting** in real time using **meeting captions**.
 
-First, run the development server:
+No webhooks, no complex setup — just enter your API key, paste a meeting link, and watch the transcript appear.
+
+---
+
+##  Features
+
+- Transcribes **Google Meet** meetings via Recall.ai
+- Includes **speaker names**
+- Updates transcript in **real time** (polling every 3 seconds)
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repo
 
 ```bash
+git clone https://github.com/codymarshall94/recall-example-app.git
+cd recall-example-app
+
+2. Get Your Recall API Key
+Go to https://dashboard.recall.ai
+
+Sign up or log in
+
+Create and Copy your API Key from the dashboard
+
+3. Configure Your Environment
+Copy the example environment file:
+
+cp .env.example .env.local
+Then open .env.local and update with your own credentials:
+
+RECALL_API_KEY=your-api-key-here
+RECALL_REGION=us-east-1
+RECALL_REGION is required. If unsure, it will be located on your dashboard
+
+4. Install Dependencies
+Install everything with:
+
+npm install
+5. Start the Development Server
+Run the dev server locally:
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+How It Works
+You paste a Google Meet URL into the input field
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Clicking Start Transcription calls the /api/start-bot API route
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This route:
+Sends a POST request to https://${RECALL_REGION}.recall.ai/api/v1/bot/
 
-## Learn More
+Includes your meeting_url and required recording_config.transcript.provider.meeting_captions
 
-To learn more about Next.js, take a look at the following resources:
+Authorization is done using Token ${RECALL_API_KEY} (Your authorization token must be prefixed with "Token"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The Recall bot joins the meeting and begins capturing captions
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The frontend uses setInterval to poll the /api/get-transcript endpoint every 3 seconds
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+The transcript (with speaker names + text) appears in real time in the UI
